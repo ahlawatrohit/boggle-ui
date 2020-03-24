@@ -1,3 +1,4 @@
+import axios from 'axios'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
@@ -5,7 +6,7 @@ import './index.css';
 
 function Square(props) {
   return (
-    <button className="square" onClick={props.onClick}>
+    <button className="square">
       {props.value}
     </button>
   );
@@ -15,56 +16,47 @@ class Board extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      squares: Array(16).fill(null),
       score: 0,
     };
   }
 
-  handleClick(i) {
-    const squares = this.state.squares.slice();
-    this.setState({
-      squares: squares,
-      score: this.state.score + 1 ,
-    });
-  }
-  renderSquare(i) {
+  renderSquare(alphabet) {
     return (
       <Square
-        value={this.state.squares[i]}
-        onClick={() => this.handleClick(i)}
+        value={alphabet}
       />
       );
   }
 
   render() {
     const status = 'Score: ' + (this.state.score);
-
+    const data = (this.props.value);
     return (
       <div>
         <div className="status">{status}</div>
         <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-          {this.renderSquare(3)}
+          {this.renderSquare(data[0])}
+          {this.renderSquare(data[1])}
+          {this.renderSquare(data[2])}
+          {this.renderSquare(data[3])}
         </div>
         <div className="board-row">
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
+          {this.renderSquare(data[4])}
+          {this.renderSquare(data[5])}
+          {this.renderSquare(data[6])}
+          {this.renderSquare(data[7])}
         </div>
         <div className="board-row">
-          {this.renderSquare(8)}
-          {this.renderSquare(9)}
-          {this.renderSquare(10)}
-          {this.renderSquare(11)}
+          {this.renderSquare(data[8])}
+          {this.renderSquare(data[9])}
+          {this.renderSquare(data[10])}
+          {this.renderSquare(data[11])}
         </div>
         <div className="board-row">
-          {this.renderSquare(12)}
-          {this.renderSquare(13)}
-          {this.renderSquare(14)}
-          {this.renderSquare(15)}
+          {this.renderSquare(data[12])}
+          {this.renderSquare(data[13])}
+          {this.renderSquare(data[14])}
+          {this.renderSquare(data[15])}
         </div>
       </div>
     );
@@ -72,13 +64,46 @@ class Board extends React.Component {
 }
 
 class BoggleGame extends React.Component {
+
+  constructor(props) {
+      super(props);
+      this.state = {
+        vi: '',
+        gameid: '',
+        row: 4,
+        column: 4,
+        grid: '',
+       };
+      this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick(i) {
+    axios.get('http://localhost:8000/game/start')
+      .then(response => {
+        this.setState({
+          vi: response.data.vi,
+          gameid: response.data.gameId,
+          row: response.data.row,
+          column: response.data.column,
+          grid: response.data.grid,
+        })
+        console.log(this.state.grid)
+      })
+  }
+
   render() {
     return (
       <div className="game">
         <div className="game-board">
-          <Board />
+          <Board
+            value={this.state.grid}
+          />
         </div>
-
+        <div>
+          <button className="play" onClick={this.handleClick}>
+            Start New Game
+          </button>
+        </div>
       </div>
     );
   }
