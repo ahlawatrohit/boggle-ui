@@ -18,7 +18,7 @@ export default class Board extends React.Component {
       <Square
         value={alphabet}
       />
-      );
+    );
   }
 
   render() {

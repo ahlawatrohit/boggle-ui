@@ -4,64 +4,78 @@ import React from 'react';
 import axios from 'axios'
 
 export default class BoggleGame extends React.Component {
-
   constructor(props) {
-      super(props);
-      this.state = {
-        gameid: '',
-        row: 4,
-        column: 4,
-        grid: '',
-        seconds: 0,
-        isButtonDisabled: false,
-        isResultDisabled: true,
-        items: [],
-        text: '' ,
-        score: 0,
-        message: '',
-        result: []
-       };
-      this.handleClick = this.handleClick.bind(this);
-      this.handleRotateBoard = this.handleRotateBoard.bind(this);
-      this.handleChange = this.handleChange.bind(this);
-      this.handleSubmit = this.handleSubmit.bind(this);
-      this.handleGetResults = this.handleGetResults.bind(this);
+    super(props);
+    this.state = {
+      gameid: '',
+      row: 4,
+      column: 4,
+      grid: '',
+      seconds: 0,
+      isButtonDisabled: false,
+      isResultDisabled: true,
+      items: [],
+      text: '' ,
+      score: 0,
+      message: '',
+      result: []
+    };
+    this.handleClick = this.handleClick.bind(this);
+    this.handleRotateBoard = this.handleRotateBoard.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleGetResults = this.handleGetResults.bind(this);
   }
 
   tick() {
-      if (this.state.seconds > 0) {
-        this.setState(state => ({
-          seconds: state.seconds - 1
-        }));
-      } else if (this.state.seconds === 0 ){
-        this.setState({
-          isButtonDisabled: true,
-          isResultDisabled: true
-        })
-        if (this.state.gameid.length !== 0){
-            this.handleGetResults()
-        }
-        clearInterval(this.interval)
+    if (this.state.seconds > 0) {
+      this.setState(state => ({
+        seconds: state.seconds - 1
+      }));
+    }
+    else if (this.state.seconds === 0 ){
+      this.setState({
+        isButtonDisabled: true,
+        isResultDisabled: true
+      })
+      if (this.state.gameid.length !== 0){
+          this.handleGetResults()
       }
+      this.componentWillUnmount()
+    }
   }
 
   componentDidMount() {
-          this.interval = setInterval(() => this.tick(), 1000);
+    this.interval = setInterval(() => this.tick(), 1000);
   }
 
   componentWillUnmount() {
     clearInterval(this.interval);
   }
 
- handleGetResults(i) {
-   axios.get('http://localhost:8000/game/result?game_id=' + (this.state.gameid))
-     .then(response => {
-       this.setState({
-         result: response.data.result,
-         isResultDisabled: false
-       })
-     })
+  handleGetResults(i) {
+    axios.get('http://localhost:8000/game/result?game_id=' + (this.state.gameid))
+      .then(response => {
+        this.setState({
+          result: this.populateResult(response.data.result),
+          isResultDisabled: false
+        })
+      })
  }
+
+  populateResult(result) {
+    var words = ''
+    for (var i = 0, length = result.length; i < length; i++) {
+      if (i === 0) {
+        words = result[i]
+      }
+      else {
+        words = words + " , " + result[i]
+      }
+    }
+    return words
+ }
+
   handleClick(i) {
     axios.get('http://localhost:8000/game/start')
       .then(response => {
@@ -70,7 +84,7 @@ export default class BoggleGame extends React.Component {
           row: response.data.row,
           column: response.data.column,
           grid: response.data.grid,
-          seconds: 10,
+          seconds: 180,
           button: 'enable',
           items: [],
           text: '' ,
@@ -81,7 +95,7 @@ export default class BoggleGame extends React.Component {
           result: []
         })
       })
-      this.componentDidMount()
+    this.componentDidMount()
   }
 
   handleChange(e) {
@@ -125,27 +139,19 @@ export default class BoggleGame extends React.Component {
   }
 
   render() {
-      const status = 'Score: ' + (this.state.score);
+    const status = 'Score: ' + (this.state.score);
     return (
       <div className="game">
         <table>
-        <thead>
-          <tr><td><h1>BOGGLE</h1></td></tr>
-        </thead>
+        <thead><tr><td><h1>BOGGLE</h1></td></tr></thead>
         <tbody>
-          <tr>
-          <th>
+        <tr><th>
         <div className="game-board">
-          <Board
-            value={this.state.grid}
-          />
+          <Board value={this.state.grid}/>
         </div>
         </th>
-
         <th>
-        <div>
-          Time Left: {this.state.seconds}
-        </div>
+        <div> Time Left: {this.state.seconds} </div>
         <div>
         <button className="play" onClick={this.handleClick}>
           Start New Game
@@ -153,28 +159,24 @@ export default class BoggleGame extends React.Component {
         </div>
 
         <div>
-        <button className="play" onClick={this.handleRotateBoard} disabled={ this.state.isButtonDisabled }>
+        <button className="play" onClick={this.handleRotateBoard}
+         disabled={ this.state.isButtonDisabled }>
           Rotate board
         </button>
         </div>
-        </th>
-        </tr>
-
-        <tr>
-        <th>
+        </th></tr>
+        <tr><th>
         <div>
         <div className="status">{status}</div>
         <div>
         <form onSubmit={this.handleSubmit}>
-          <h3>
-            Find words
-          </h3>
+        <h3>Find words</h3>
           <input
             id="find-words"
             onChange={this.handleChange}
             value={this.state.text}
           />
-          <button disabled={ this.state.isButtonDisabled }>
+          <button disabled={this.state.isButtonDisabled}>
             Submit
           </button>
         </form>
@@ -186,14 +188,15 @@ export default class BoggleGame extends React.Component {
         </th>
         <th>
         <div hidden={ this.state.isResultDisabled} >
-        <textarea
-         defaultValue=   {this.state.result}
+        <h2> GAME OVER </h2>
+        <h4> Valid Game Words</h4>
+        <textarea className="result-content"
+         defaultValue={this.state.result}
        />
         </div>
-        </th>
-        </tr>
+        </th></tr>
         </tbody>
-          </table>
+        </table>
       </div>
     );
   }

@@ -8,14 +8,19 @@ ol, ul {
 }
 
 .menu ul, .menu li{
-   margin:0;
-   padding:0;
+  margin:0;
+  padding:0;
 }
 
 .board-row:after {
   clear: both;
   content: "";
   display: table;
+}
+
+.result-content {
+  width: 200px;
+  height: 200px;
 }
 
 .status {
