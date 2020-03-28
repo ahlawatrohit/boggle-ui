@@ -11,9 +11,6 @@ function Square(props) {
 export default class Board extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      score: 0,
-    };
   }
 
   renderSquare(alphabet) {
