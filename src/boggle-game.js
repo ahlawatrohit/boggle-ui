@@ -36,12 +36,10 @@ export default class BoggleGame extends React.Component {
     else if (this.state.seconds === 0 ){
       this.setState({
         isButtonDisabled: true,
-        isResultDisabled: true
       })
       if (this.state.gameid.length !== 0){
           this.handleGetResults()
       }
-      this.componentWillUnmount()
     }
   }
 
@@ -58,7 +56,8 @@ export default class BoggleGame extends React.Component {
       .then(response => {
         this.setState({
           result: this.populateResult(response.data.result),
-          isResultDisabled: false
+          isResultDisabled: false,
+          gameid: '',
         })
       })
  }
@@ -95,7 +94,6 @@ export default class BoggleGame extends React.Component {
           result: []
         })
       })
-    this.componentDidMount()
   }
 
   handleChange(e) {
