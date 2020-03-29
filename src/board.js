@@ -9,10 +9,7 @@ function Square(props) {
 }
 
 export default class Board extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
+  
   renderSquare(alphabet) {
     return (
       <Square
