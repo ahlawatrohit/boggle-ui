@@ -3,13 +3,13 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 Setup
 
 1. Install node js and npm
-2. Goto Project directory and run
+2. Goto Project directory (boggle-ui) and run
 ###  `npm install`
 
-Note: If you get error run the below command to wipe node_modules and Install
+Note: If you get error, run the below command to wipe node_modules and Install
 ### `rm -rf node_modules && npm install`
 
-3. In the project directory, run:
+3. In the project directory (boggle-ui), run:
 
 ### `npm start`
 
